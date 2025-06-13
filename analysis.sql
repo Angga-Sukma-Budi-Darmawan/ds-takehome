@@ -47,36 +47,6 @@ JOIN frequency_ranked f ON r.customer_id = f.customer_id
 JOIN monetary_ranked m ON r.customer_id = m.customer_id
 ORDER BY 4;
 
-
-WITH payment_quartiles AS (
-    SELECT *, NTILE(4) OVER (ORDER BY payment_value) AS payment_qtile
-    FROM e_commerce_transactions
-),
-
-noise_quartiles AS (
-    SELECT *, NTILE(4) OVER (ORDER BY decoy_noise) AS noise_qtile
-    FROM payment_quartiles
-)
-
-SELECT *
-FROM noise_quartiles
--- WHERE payment_qtile = 4  -- top 25%
---   AND noise_qtile = 1    -- bottom 25%
-WHERE decoy_flag = 'A'
-ORDER BY noise_qtile, decoy_flag, decoy_noise ASC;
-
-SELECT COUNT(order_id)
-FROM
-(SELECT *
-	FROM e_commerce_transactions
-	WHERE decoy_noise > 795
-	ORDER BY 6) as x;
-
-SELECT *
-FROM e_commerce_transactions
--- WHERE decoy_noise > 1145
-ORDER BY 6 DESC;
-
 -- SOAL 2: Cek Anomali
 WITH noise_quartiles AS (
     SELECT *, 
